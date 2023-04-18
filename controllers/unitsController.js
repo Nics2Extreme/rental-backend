@@ -12,7 +12,7 @@ const getUnit = async (req, res) => {
     if (!unit) {
         return res.status(204).json({ 'message': `Unit ID ${req.params.id} not found` });
     }
-    res.json(user);
+    res.json(unit);
 }
 
 module.exports = {
