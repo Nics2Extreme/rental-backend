@@ -1,4 +1,5 @@
 const Unit = require('../model/Unit');
+const Tenant = require('../model/Tenant');
 
 const getAllUnits = async (req, res) => {
     const units = await Unit.find();

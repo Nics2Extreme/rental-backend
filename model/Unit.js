@@ -9,6 +9,26 @@ const unitSchema = new Schema({
     unitLocation: {
         type: String,
         required: true
+    },
+    unitPrice: {
+        type: Number,
+        required: true
+    },
+    unitAvailability: {
+        type: Boolean,
+        required: true
+    },
+    unitSqm: {
+        type: Number,
+        required: true
+    },
+    unitFloor: {
+        type: String,
+        required: true
+    },
+    imagePath: {
+        type: String,
+        required: true
     }
 });
 

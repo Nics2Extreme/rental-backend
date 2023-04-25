@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const userSchema = new Schema({
+const tenantSchema = new Schema ({
     username: {
         type: String,
         required: true
@@ -23,9 +23,6 @@ const userSchema = new Schema({
     },
     lname: {
         type: String,
-    },
-    unit: {
-        type: Schema.Types.ObjectId, ref: 'Unit'
     },
     occupation: {
         type: String,
@@ -50,4 +47,4 @@ const userSchema = new Schema({
     refreshToken: String
 });
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('Tenant', tenantSchema);

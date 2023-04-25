@@ -1,4 +1,5 @@
 const User = require('../model/User');
+const Unit = require('../model/Unit');
 
 const getAllUsers = async (req, res) => {
     const users = await User.find();
@@ -25,8 +26,18 @@ const getUser = async (req, res) => {
     res.json(user);
 }
 
+const getUnitWithTenant = async (req, res) => {
+    if (!req?.params?.id) return res.status(400).json({ "message": 'Unit ID required' });
+    const tenant = await User.findOne({ _id: req.params.id }).populate('unit').exec();
+    if (!tenant) {
+        return res.status(204).json({ 'message': `Unit ID ${req.params.id} not found` });
+    }
+    res.json(tenant);
+}
+
 module.exports = {
     getAllUsers,
     deleteUser,
-    getUser
+    getUser,
+    getUnitWithTenant
 }
