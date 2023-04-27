@@ -2,7 +2,7 @@ const User = require('../model/User');
 const Unit = require('../model/Unit');
 
 const getAllUsers = async (req, res) => {
-    const users = await User.find();
+    const users = await User.find().populate('unit').exec();
     if (!users) return res.status(204).json({ 'message': 'No users found' });
     res.json(users);
 }
