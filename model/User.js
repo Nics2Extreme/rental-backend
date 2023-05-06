@@ -31,7 +31,7 @@ const userSchema = new Schema({
         type: String,
     },
     phoneno: {
-        type: Number,
+        type: String,
     },
     email: {
         type: String,
