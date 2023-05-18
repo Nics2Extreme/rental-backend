@@ -50,6 +50,7 @@ app.use('/expenses', require('./routes/api/expenses'));
 app.use('/sales', require('./routes/api/sales'));
 app.use('/inquiry', require('./routes/inquiry'));
 app.use('/users', require('./routes/api/users'));
+app.use('/complaints', require('./routes/api/complaints'));
 
 app.all('*', (req, res) => {
     res.status(404);
