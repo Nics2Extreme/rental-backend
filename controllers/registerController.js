@@ -1,37 +1,51 @@
-const User = require('../model/User');
-const bcrypt = require('bcrypt');
+const User = require("../model/User");
+const bcrypt = require("bcrypt");
+const fs = require("fs").promises;
 
 const handleNewUser = async (req, res) => {
-    const { user, pwd, fname, lname, occ, phone, email, address, unit } = req.body;
-    if (!user || !pwd) return res.status(400).json({ 'message': 'Username and password are required.' });
+  const { user, pwd, fname, lname, occ, phone, email, address, unit } =
+    req.body;
+  if (!user || !pwd)
+    return res
+      .status(400)
+      .json({ message: "Username and password are required." });
 
-    // check for duplicate usernames in the db
-    const duplicate = await User.findOne({ username: user }).exec();
-    if (duplicate) return res.sendStatus(409); //Conflict 
+  // check for duplicate usernames in the db
+  const duplicate = await User.findOne({ username: user }).exec();
+  if (duplicate) return res.sendStatus(409); //Conflict
 
-    try {
-        //encrypt the password
-        const hashedPwd = await bcrypt.hash(pwd, 10);
+  try {
+    //upload image
+    const fileType = req.file.mimetype.split("/")[1];
+    const newFileName = req.file.originalname.split(".")[0] + "." + fileType;
 
-        //create and store the new user
-        const result = await User.create({
-            "username": user,
-            "password": hashedPwd,
-            "fname": fname,
-            "lname": lname,
-            "occ": occ,
-            "phoneno": phone,
-            "email": email,
-            "address": address,
-            "unit": unit
-        });
+    fs.rename(
+      `./public/img/${req.file.filename}`,
+      `./public/img/${newFileName}`
+    );
 
-        console.log(result);
+    //encrypt the password
+    const hashedPwd = await bcrypt.hash(pwd, 10);
 
-        res.status(201).json({ 'success': `New user ${user} created!` });
-    } catch (err) {
-        res.status(500).json({ 'message': err.message });
-    }
-}
+    //create and store the new user
+    const result = await User.create({
+      username: user,
+      password: hashedPwd,
+      fname: fname,
+      lname: lname,
+      occ: occ,
+      phoneno: phone,
+      email: email,
+      address: address,
+      unit: unit,
+    });
+
+    console.log(result);
+
+    res.status(201).json({ success: `New user ${user} created!` });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
 module.exports = { handleNewUser };

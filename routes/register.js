@@ -1,7 +1,9 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const registerController = require('../controllers/registerController');
+const multer = require("multer");
+const upload = multer({ dest: "./public/img" });
+const registerController = require("../controllers/registerController");
 
-router.post('/', registerController.handleNewUser);
+router.post("/", upload.single("image"), registerController.handleNewUser);
 
 module.exports = router;

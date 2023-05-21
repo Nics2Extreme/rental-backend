@@ -18,11 +18,7 @@ const inqSchema = new Schema({
         type: String,
         required: true
     },
-    contact: {
-        type: String,
-        required: true
-    },
-    contactTime: {
+    branch: {
         type: String,
         required: true
     },
