@@ -1,10 +1,11 @@
 const Inquiry = require("../model/Inquiry");
 const nodemailer = require("nodemailer");
+const { google } = require("googleapis");
+const OAuth2 = google.auth.OAuth2;
 
 const handleNewInq = async (req, res) => {
   const { purpose, name, phoneno, email, branch, questions } = req.body;
   const myemail = process.env.SENDER_EMAIL;
-  const mypassword = process.env.APPLICATION_PASSWORD;
   if (!email)
     return res.status(400).json({ message: "Inquiry must not be empty." });
 
@@ -19,18 +20,40 @@ const handleNewInq = async (req, res) => {
       questions: questions,
     });
 
-    const transporter = nodemailer.createTransport({
+    const oauth2Client = new OAuth2(
+      "674632630176-s9o246a6jfgh05tteiploruisfhka5mn.apps.googleusercontent.com", // ClientID
+      "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", // Client Secret
+      "https://developers.google.com/oauthplayground" // Redirect URL
+    );
+
+    oauth2Client.setCredentials({
+      refresh_token:
+        "1//04rvDRAsihX0mCgYIARAAGAQSNwF-L9Ir5P_s06pukcAZTlIMNQ_XISTqTkt-UuoLvGkaZjGksg08ycBIgr3urhsW5fJ8s0XUfeM",
+    });
+    const accessToken = oauth2Client.getAccessToken();
+
+    const smtpTransport = nodemailer.createTransport({
       service: "gmail",
       auth: {
+        type: "OAuth2",
         user: myemail,
-        pass: mypassword,
+        clientId:
+          "674632630176-s9o246a6jfgh05tteiploruisfhka5mn.apps.googleusercontent.com",
+        clientSecret: "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",
+        refreshToken:
+          "1//04rvDRAsihX0mCgYIARAAGAQSNwF-L9Ir5P_s06pukcAZTlIMNQ_XISTqTkt-UuoLvGkaZjGksg08ycBIgr3urhsW5fJ8s0XUfeM",
+        accessToken: accessToken,
+      },
+      tls: {
+        rejectUnauthorized: false,
       },
     });
 
-    const mail_configs = {
+    const mailOptions = {
       from: myemail,
       to: email,
-      subject: "Testing",
+      subject: "Node.js Email with Secure OAuth",
+      generateTextFromHTML: true,
       html: `<!DOCTYPE html>
       <html lang="en" >
       <head>
@@ -77,7 +100,11 @@ const handleNewInq = async (req, res) => {
       </html>`,
     };
 
-    transporter.sendMail(mail_configs);
+    smtpTransport.sendMail(mailOptions, (error, response) => {
+      error ? console.log(error) : console.log(response);
+      smtpTransport.close();
+    });
+
     console.log(result);
 
     res.status(201).json({ success: `Inquiry sent!` });
