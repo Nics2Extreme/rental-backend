@@ -18,10 +18,22 @@ const salesSchema = new Schema({
         required: true
     },
     expenses: {
-        rental: String,
-        electricity: String,
-        water: String,
-        internet: String,
+        rental: {
+            type: String,
+            required: true,
+        },
+        electricity: {
+            type: String,
+            required: true,
+        },
+        water: {
+            type: String,
+            required: true,
+        },
+        internet: {
+            type: String,
+            required: true,
+        },
     }
 });
 

@@ -8,4 +8,7 @@ router.route('/')
 router.route('/:id')
     .get(salesController.getSale);
 
+router.route('/add')
+    .post(salesController.addSale);
+
 module.exports = router;
