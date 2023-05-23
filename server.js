@@ -47,6 +47,7 @@ app.use("/logout", require("./routes/logout"));
 app.use("/units", require("./routes/api/units"));
 app.use("/expenses", require("./routes/api/expenses"));
 app.use("/sales", require("./routes/api/sales"));
+app.use("/billing", require("./routes/api/billing"));
 app.use("/inquiry", require("./routes/inquiry"));
 app.use("/users", require("./routes/api/users"));
 app.use("/complaints", require("./routes/api/complaints"));

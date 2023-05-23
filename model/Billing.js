@@ -1,38 +1,46 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const unitSchema = new Schema({
-    unitnumber: {
+const billSchema = new Schema({
+    rent: {
         type: Number,
         required: true
     },
-    unitLocation: {
-        type: String,
-        required: true
-    },
-    unitPrice: {
+    latestElec: {
         type: Number,
         required: true
     },
-    unitAvailability: {
-        type: Boolean,
-        required: true
-    },
-    unitSqm: {
+    prevElec: {
         type: Number,
         required: true
     },
-    unitFloor: {
-        type: String,
+    latestWat: {
+        type: Number,
+        required: true
+    },
+    prevWat: {
+        type: Number,
+        required: true
+    },
+    latestInt: {
+        type: Number,
+        required: true
+    },
+    prevInt: {
+        type: Number,
         required: true
     },
     tenant: {
         type: Schema.Types.ObjectId, ref: 'User'
     },
-    imagePath: {
+    month: {
         type: String,
         required: true
+    },
+    date: {
+        type: Date,
+        default: Date.now
     }
 });
 
-module.exports = mongoose.model('Unit', unitSchema);
+module.exports = mongoose.model('Billing', billSchema);
