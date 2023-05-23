@@ -1,5 +1,6 @@
 const User = require("../model/User");
 const bcrypt = require("bcrypt");
+const Unit = require("../model/Unit");
 const fs = require("fs").promises;
 
 const handleNewUser = async (req, res) => {
@@ -40,7 +41,12 @@ const handleNewUser = async (req, res) => {
       unit: unit,
     });
 
+    const userId = result._id;
+
+    const update = await Unit.findOneAndUpdate({ '_id': unit }, { $set: { tenant: userId, unitAvailability: false } }, { new: true });
+
     console.log(result);
+    console.log(update);
 
     res.status(201).json({ success: `New user ${user} created!` });
   } catch (err) {
