@@ -1,57 +1,106 @@
-const Billing = require('../model/Billing');
-const User = require('../model/User');
+const Billing = require("../model/Billing");
+const User = require("../model/User");
 
 const getAllBillings = async (req, res) => {
-    const billings = await Billing.find();
-    if (!billings) return res.status(204).json({ 'message': 'No sales found' });
-    res.json(billings);
-}
+  const billings = await Billing.find();
+  if (!billings) return res.status(204).json({ message: "No sales found" });
+  res.json(billings);
+};
 
 const getBilling = async (req, res) => {
-    if (!req?.params?.id) return res.status(400).json({ "message": 'Billing ID required' });
-    const billing = await Billing.findOne({ _id: req.params.id }).exec();
-    if (!billing) {
-        return res.status(204).json({ 'message': `Billing ID ${req.params.id} not found` });
-    }
-    res.json(sale);
-}
+  if (!req?.params?.id)
+    return res.status(400).json({ message: "Billing ID required" });
+  const billing = await Billing.findOne({ _id: req.params.id }).exec();
+  if (!billing) {
+    return res
+      .status(204)
+      .json({ message: `Billing ID ${req.params.id} not found` });
+  }
+  res.json(sale);
+};
 
 const addBilling = async (req, res) => {
-    const { rent, latestElec, prevElec, latestWat, prevWat, latestInt, prevInt, tenant, month } = req.body;
+  const { rent, latestElec, latestWat, int, tenant } = req.body;
+  const currentMonth = new Date().getMonth() + 1; // Get the current month (1-12)
+  const previousMonth = currentMonth === 1 ? 12 : currentMonth - 1; // Calculate the previous month
 
-    try {
-        //update and store the new user
-        const result = await Billing.create({
-            "rent": rent,
-            "latestElec": latestElec,
-            "prevElec": prevElec,
-            "latestWat": latestWat,
-            "prevWat": prevWat,
-            "latestInt": latestInt,
-            "prevInt": prevInt,
-            "tenant": tenant,
-            "month": month,
+  try {
+    //update and store the new user
+    const foundDocuments = await Billing.find({
+      tenant: req.body.tenant,
+    });
+
+    console.log(foundDocuments);
+
+    const duplicate = await Billing.find({
+      tenant: req.body.tenant,
+    }).then(
+      Billing.findOne({
+        $expr: {
+          $eq: [{ $month: "$date" }, currentMonth],
+        },
+      })
+    );
+
+    console.log(duplicate);
+
+    if (duplicate.length > 0)
+      return res
+        .status(409)
+        .json({ success: `Billing for this month already exists!` });
+
+    if (foundDocuments.length !== 0) {
+      const result = await Billing.findOne({
+        $expr: {
+          $eq: [{ $month: "$date" }, previousMonth],
+        },
+      }).then((foundBilling) => {
+        const billing = Billing.create({
+          rent: rent,
+          latestElec: latestElec,
+          prevElec: foundBilling.latestElec,
+          latestWat: latestWat,
+          prevWat: foundBilling.latestWat,
+          int: int,
+          tenant: tenant,
         });
-
-        console.log(result);
-        res.status(201).json({ 'success': `Billing created!` });
-    } catch (err) {
-        res.status(500).json({ 'message': err.message });
+        console.log(billing);
+      });
+      return res.status(201).json({ success: `Billing created!` });
+    } else {
+      const result = await Billing.create({
+        rent: rent,
+        latestElec: latestElec,
+        prevElec: latestElec,
+        latestWat: latestWat,
+        prevWat: latestWat,
+        int: int,
+        tenant: tenant,
+      });
+      return res.status(201).json({ success: `Billing created!` });
     }
-}
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
-const getBillingWithTenant = async (req, res) => {
-    if (!req?.params?.id) return res.status(400).json({ "message": 'Billing ID required' });
-    const billing = await Billing.findOne({ tenant: req.params.id }).populate('tenant').exec();
-    if (!billing) {
-        return res.status(204).json({ 'message': `Unit ID ${req.params.id} not found` });
-    }
-    res.json(billing);
-}
+const getBillingsWithTenant = async (req, res) => {
+  if (!req?.params?.id)
+    return res.status(400).json({ message: "Billing ID required" });
+  const billing = await Billing.find({ tenant: req.params.id })
+    .populate("tenant")
+    .exec();
+  if (!billing) {
+    return res
+      .status(204)
+      .json({ message: `Unit ID ${req.params.id} not found` });
+  }
+  res.json(billing);
+};
 
 module.exports = {
-    getAllBillings,
-    getBilling,
-    addBilling,
-    getBillingWithTenant
-}
+  getAllBillings,
+  getBilling,
+  addBilling,
+  getBillingsWithTenant,
+};
