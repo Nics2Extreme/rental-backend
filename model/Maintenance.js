@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const complaintsSchema = new Schema ({
+const maintenanceSchema = new Schema ({
     username: {
         type: String,
         required: true
     },
-    issue: {
+    maint: {
         type: String,
         required: true
     },
@@ -27,4 +27,4 @@ const complaintsSchema = new Schema ({
     }
 });
 
-module.exports = mongoose.model('Complaints', complaintsSchema);
+module.exports = mongoose.model('Maintenances', maintenanceSchema);

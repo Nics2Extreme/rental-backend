@@ -3,24 +3,24 @@ const User = require("../model/User");
 
 const getAllBillings = async (req, res) => {
   const billings = await Billing.find();
-  if (!billings) return res.status(204).json({ message: "No sales found" });
+  if (!billings) return res.status(204).json({ message: "No billing found" });
   res.json(billings);
 };
 
 const getBilling = async (req, res) => {
   if (!req?.params?.id)
     return res.status(400).json({ message: "Billing ID required" });
-  const billing = await Billing.findOne({ _id: req.params.id }).exec();
+  const billing = await Billing.find({ tenant: req.params.id }).exec();
   if (!billing) {
     return res
       .status(204)
       .json({ message: `Billing ID ${req.params.id} not found` });
   }
-  res.json(sale);
+  res.json(billing);
 };
 
 const addBilling = async (req, res) => {
-  const { rent, latestElec, latestWat, int, tenant } = req.body;
+  const { rent, latestElec, latestWat, int, tenant, unit } = req.body;
   const currentMonth = new Date().getMonth() + 1; // Get the current month (1-12)
   const previousMonth = currentMonth === 1 ? 12 : currentMonth - 1; // Calculate the previous month
 
@@ -30,19 +30,14 @@ const addBilling = async (req, res) => {
       tenant: req.body.tenant,
     });
 
-    console.log(foundDocuments);
-
     const duplicate = await Billing.find({
       tenant: req.body.tenant,
-    }).then(
-      Billing.findOne({
-        $expr: {
-          $eq: [{ $month: "$date" }, currentMonth],
-        },
-      })
-    );
+      $expr: {
+        $eq: [{ $month: "$date" }, currentMonth],
+      }
+    })
 
-    console.log(duplicate);
+    console.log(currentMonth);
 
     if (duplicate.length > 0)
       return res
@@ -63,6 +58,7 @@ const addBilling = async (req, res) => {
           prevWat: foundBilling.latestWat,
           int: int,
           tenant: tenant,
+          unit: unit
         });
         console.log(billing);
       });
@@ -76,6 +72,7 @@ const addBilling = async (req, res) => {
         prevWat: latestWat,
         int: int,
         tenant: tenant,
+        unit: unit
       });
       return res.status(201).json({ success: `Billing created!` });
     }

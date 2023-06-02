@@ -1,5 +1,21 @@
 const Complaints = require('../model/Complaints');
 
+const getAllComplaints = async (req, res) => {
+    const complaints = await Complaints.find();
+    if (!complaints) return res.status(204).json({ message: "No complaints found" });
+    res.json(complaints);
+};
+
+const updateComplaint = async (req, res) => {
+    const { isStatus } = req.body;
+    if (!req?.params?.id) return res.status(400).json({ "message": 'Complaint ID required' });
+    const complaint = await Complaints.findOneAndUpdate({ _id: req.params.id }, { status: true, isStatus: isStatus }, { new: true }).exec();
+    if (!complaint) {
+        return res.status(204).json({ 'message': `Complaint ID ${req.params.id} not found` });
+    }
+    res.json(complaint);    
+};
+
 const handleNewCom = async (req, res) => {
     const { username, issue, other } = req.body;
     if (!issue) return res.status(400).json({ 'message': 'Complaint must not be empty.' });
@@ -10,7 +26,7 @@ const handleNewCom = async (req, res) => {
             "username": username,
             "issue": issue,
             "other": other,
-
+            "isStatus": null
         });
 
         console.log(result);
@@ -21,4 +37,4 @@ const handleNewCom = async (req, res) => {
     }
 }
 
-module.exports = { handleNewCom };
+module.exports = { handleNewCom, getAllComplaints, updateComplaint };

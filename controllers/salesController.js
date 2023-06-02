@@ -1,7 +1,7 @@
 const Sales = require('../model/Sales');
 
 const getAllSales = async (req, res) => {
-    const sales = await Sales.find();
+    const sales = await Sales.find().populate('unit').populate('billing').exec();
     if (!sales) return res.status(204).json({ 'message': 'No sales found' });
     res.json(sales);
 }
@@ -16,51 +16,51 @@ const getSale = async (req, res) => {
 }
 
 const addSale = async (req, res) => {
-    const { month, unit, unitname, year, rent, elec, water, int } = req.body;
+    const { month, unit, billing, year } = req.body;
+    const currentMonth = new Date().getMonth() + 1; // Get the current month (1-12)
+    const previousMonth = currentMonth === 1 ? 12 : currentMonth - 1; // Calculate the previous month
 
-    // check for duplicate usernames in the db
-    const duplicate = await Sales.findOne({ month: month }).exec();
-    if (duplicate) {
-        try {
+    try {
+        //update and store the new user
+        const foundDocuments = await Sales.find({
+            month: req.body.month,
+        });
+
+        const duplicate = await Sales.find({
+            month: req.body.month,
+        }).then(
+            Sales.findOne({
+                $expr: {
+                    $eq: [{ $month: "$date" }, currentMonth],
+                },
+            })
+        );
+
+        if (duplicate.length > 0) {
             //update and store the new user
-            const result = await Sales.updateOne({ unit: unit, month: month },
+            const result = await Sales.updateOne({ month: month },
                 {
-                    "month": month,
                     "unit": unit,
-                    "unitName": unitname,
+                    "billing": billing,
+                    "month": month,
                     "year": year,
-                    expenses: {
-                        "rental": rent,
-                        "electricity": elec,
-                        "water": water,
-                        "internet": int
-                    }
                 });
 
             res.status(201).json({ 'success': `Sale for ${month} updated!` });
-        } catch (err) {
-            res.status(500).json({ 'message': err.message });
         }
-    } else {
-        try {
+
+        if (foundDocuments.length === 0) {
             //create and store the new user
             const result = await Sales.create({
-                "month": month,
                 "unit": unit,
-                "unitName": unitname,
+                "billing": billing,
+                "month": month,
                 "year": year,
-                expenses: {
-                    "rental": rent,
-                    "electricity": elec,
-                    "water": water,
-                    "internet": int
-                }
             });
-
             res.status(201).json({ 'success': `New sale for ${month} created!` });
-        } catch (err) {
-            res.status(500).json({ 'message': err.message });
         }
+    } catch (err) {
+        res.status(500).json({ 'message': err.message });
     }
 }
 
