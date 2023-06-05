@@ -5,35 +5,21 @@ const salesSchema = new Schema({
     unit: {
         type: Schema.Types.ObjectId, ref: 'Unit'
     },
-    unitName: {
-        type: String,
-        required: true
+    billing: {
+        type: Schema.Types.ObjectId,
+        ref: "Billing",
     },
     month: {
         type: String,
         required: true
     },
     year: {
-        type: String,
+        type: Number,
         required: true
     },
-    expenses: {
-        rental: {
-            type: String,
-            required: true,
-        },
-        electricity: {
-            type: String,
-            required: true,
-        },
-        water: {
-            type: String,
-            required: true,
-        },
-        internet: {
-            type: String,
-            required: true,
-        },
+    date: {
+        type: Date,
+        default: Date.now,
     }
 });
 

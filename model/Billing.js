@@ -30,6 +30,10 @@ const billSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "User",
   },
+  unit: {
+    type: String,
+    required: true,
+  },
   date: {
     type: Date,
     default: Date.now,

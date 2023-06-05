@@ -52,7 +52,7 @@ const handleNewInq = async (req, res) => {
     const mailOptions = {
       from: myemail,
       to: email,
-      subject: "Node.js Email with Secure OAuth",
+      subject: "Inquiry for Marlyn's House Rental",
       generateTextFromHTML: true,
       html: `<!DOCTYPE html>
       <html lang="en" >
