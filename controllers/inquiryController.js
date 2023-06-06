@@ -113,4 +113,11 @@ const handleNewInq = async (req, res) => {
   }
 };
 
-module.exports = { handleNewInq };
+const getInquiries = async (req, res) => {
+  const inquiries = await Inquiry.find();
+  if (!inquiries)
+    return res.status(204).json({ message: "No inquiries found" });
+  res.json(inquiries);
+};
+
+module.exports = { handleNewInq, getInquiries };

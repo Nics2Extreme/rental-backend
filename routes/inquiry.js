@@ -1,7 +1,9 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const inqController = require('../controllers/inquiryController');
+const inqController = require("../controllers/inquiryController");
 
-router.post('/', inqController.handleNewInq);
+router.post("/", inqController.handleNewInq);
+
+router.get("/inq", inqController.getInquiries);
 
 module.exports = router;

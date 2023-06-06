@@ -34,8 +34,8 @@ const addBilling = async (req, res) => {
       tenant: req.body.tenant,
       $expr: {
         $eq: [{ $month: "$date" }, currentMonth],
-      }
-    })
+      },
+    });
 
     console.log(currentMonth);
 
@@ -58,7 +58,7 @@ const addBilling = async (req, res) => {
           prevWat: foundBilling.latestWat,
           int: int,
           tenant: tenant,
-          unit: unit
+          unit: unit,
         });
         console.log(billing);
       });
@@ -72,7 +72,7 @@ const addBilling = async (req, res) => {
         prevWat: latestWat,
         int: int,
         tenant: tenant,
-        unit: unit
+        unit: unit,
       });
       return res.status(201).json({ success: `Billing created!` });
     }
