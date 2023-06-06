@@ -43,10 +43,11 @@ const handleNewUser = async (req, res) => {
 
     const userId = result._id;
 
-    const update = await Unit.findOneAndUpdate({ '_id': unit }, { $set: { tenant: userId, unitAvailability: false } }, { new: true });
-
-    console.log(result);
-    console.log(update);
+    const update = await Unit.findOneAndUpdate(
+      { _id: unit },
+      { $set: { tenant: userId, unitAvailability: false } },
+      { new: true }
+    );
 
     res.status(201).json({ success: `New user ${user} created!` });
   } catch (err) {
